@@ -1,0 +1,21 @@
+[project]
+name = "ito-game"
+version = "0.1.0"
+description = "Reusable LangGraph implementation of the Ito card game"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "langchain>=1.1.0",
+    "langchain-openai>=1.1.0",
+    "langchain-google-genai>=2.0.0",
+    "langgraph>=1.0.4",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["models", "agents", "utils"]
