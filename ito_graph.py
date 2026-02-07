@@ -108,26 +108,36 @@ class ItoGameGraph:
         """Initialize the game."""
         if self.debug:
             print("--- Setup Node ---")
-        
-        deck = create_deck()
 
         # Use provided agent_ids if not in state
         agents = state.get("agents") or self.agent_ids
 
-        # Deal cards
-        hands = {}
-        for agent in agents:
-            hands[agent] = draw_card(deck)
+        # Keep pre-dealt hands when a complete hand mapping is provided.
+        provided_hands = state.get("hands", {})
+        if isinstance(provided_hands, dict) and set(provided_hands.keys()) == set(agents):
+            hands = dict(provided_hands)
+            deck = [card for card in create_deck() if card not in set(hands.values())]
+        else:
+            deck = create_deck()
+            hands = {}
+            for agent in agents:
+                hands[agent] = draw_card(deck)
 
         # Select theme
         theme_override = (state.get("theme_override") or "").strip()
         theme = theme_override if theme_override else (self.theme or random.choice(THEMES_JA))
 
+        initial_history = state.get("history")
+        if isinstance(initial_history, list) and initial_history:
+            history = list(initial_history)
+        else:
+            history = [f"ゲーム開始。お題: {theme}"]
+
         # Create new state with all fields
         new_state = dict(state)
         new_state.update({
             "theme": theme,
-            "history": [f"ゲーム開始。お題: {theme}"],
+            "history": history,
             "played_cards": [],
             "last_played_card": 0,
             "utterances": {},
